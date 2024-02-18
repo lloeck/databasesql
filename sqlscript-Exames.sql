@@ -1,0 +1,109 @@
+REM   Script: Gestão de Exames rev. 1
+REM   Script de criação de tabelas, inserção e manipulação de dados em um sistema de gestão de exames.
+Script organizado, removendo os comandos errados.
+
+CREATE TABLE Paciente ( 
+    codigo NUMERIC(4) PRIMARY KEY, 
+    nome VARCHAR(150), 
+    cpf NUMERIC(11), 
+    dataNasc DATE, 
+    sexo CHAR(1), 
+    email VARCHAR(50) 
+);
+
+CREATE TABLE Especialidade ( 
+    codigo NUMERIC(3) PRIMARY KEY, 
+    nome VARCHAR(50) 
+);
+
+CREATE TABLE Medico ( 
+    crm NUMERIC(5) PRIMARY KEY, 
+    nome VARCHAR(150), 
+    codEspecialidade NUMERIC(3) 
+);
+
+ALTER TABLE Medico ADD CONSTRAINT FK_Medico_2 
+    FOREIGN KEY (codEspecialidade) 
+    REFERENCES Especialidade (codigo) 
+    ON DELETE CASCADE;
+
+CREATE TABLE Fichas ( 
+    numero NUMERIC(3) PRIMARY KEY, 
+    dataExame DATE, 
+    codPaciente NUMERIC(4), 
+    crm NUMERIC(5) 
+);
+
+ALTER TABLE Fichas ADD CONSTRAINT FK_Fichas_2 
+    FOREIGN KEY (codPaciente) 
+    REFERENCES Paciente (codigo);
+
+ALTER TABLE Fichas ADD CONSTRAINT FK_Fichas_3 
+    FOREIGN KEY (crm) 
+    REFERENCES Medico (crm);
+
+CREATE TABLE Exame ( 
+    codigo NUMERIC(3) PRIMARY KEY, 
+    sigla VARCHAR(4), 
+    descricao VARCHAR(150), 
+    valor NUMERIC(6), 
+    prazo DATE 
+);
+
+CREATE TABLE Fichas_Exames ( 
+    numFicha NUMERIC(3), 
+    codExame NUMERIC(3) 
+);
+
+ALTER TABLE Fichas_Exames ADD CONSTRAINT FK_Fichas_Exames_1 
+    FOREIGN KEY (numFicha) 
+    REFERENCES Fichas (numero) 
+    ON DELETE SET NULL;
+
+ALTER TABLE Fichas_Exames ADD CONSTRAINT FK_Fichas_Exames_2 
+    FOREIGN KEY (codExame) 
+    REFERENCES Exame (codigo) 
+    ON DELETE SET NULL;
+
+ALTER TABLE PACIENTE 
+ADD CONSTRAINT CK_sexo CHECK (sexo IN ('M', 'F', 'N'));
+
+INSERT INTO ESPECIALIDADE VALUES (001, 'CLINICO GERAL');
+
+INSERT INTO ESPECIALIDADE VALUES (002, 'OTORRINOLARINGOLOGISTA');
+
+INSERT INTO ESPECIALIDADE VALUES (003, 'CARDIOLOGISTA');
+
+SELECT * FROM ESPECIALIDADE;
+
+INSERT INTO MEDICO VALUES (33677, 'Joao', 001);
+
+INSERT INTO MEDICO VALUES (28057, 'Marcos', 002);
+
+INSERT INTO MEDICO VALUES (96189, 'Felipe', 003);
+
+SELECT * FROM MEDICO;
+
+INSERT INTO PACIENTE VALUES (0001, 'MARIA', 94676658373, DATE'1990-01-12', 'F', 'MARIA@HOTMAIL.COM');
+
+INSERT INTO PACIENTE VALUES (0002, 'ZEUS', 94676658373, DATE'1952-05-14', 'M', 'ZEUS2000@GMAIL.COM');
+
+INSERT INTO PACIENTE VALUES (0003, 'PABLO', 94676658373, DATE'1952-05-14', 'N', 'PABLO@YAHOO.COM');
+
+SELECT * FROM PACIENTE;
+
+INSERT INTO FICHAS VALUES (235, DATE'2023-08-15', 0001, 28057);
+
+INSERT INTO EXAME VALUES (458, 'EECG', 'ELETROCARDIOGRAMA', 000256, DATE'2023-08-20');
+
+ALTER TABLE ESPECIALIDADE  
+RENAME COLUMN NOME TO ESPECIALIDADE;
+
+SELECT * FROM MEDICO;
+
+SELECT * FROM ESPECIALIDADE;
+
+SELECT MED.crm, MED.nome, ESP.ESPECIALIDADE 
+    FROM MEDICO MED INNER JOIN ESPECIALIDADE ESP  
+    ON MED.CODESPECIALIDADE = ESP.CODIGO;
+
